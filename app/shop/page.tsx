@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   ArrowRight,
@@ -159,7 +159,7 @@ const products: Product[] = [
 
 const categories = ["All", "Women", "Men", "Kids"];
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams();
 
   // =====================================================
@@ -288,31 +288,24 @@ export default function ShopPage() {
         (item) => item.productId === productId
       );
 
-      const updatedCart = existingItem
-        ? current.map((item) =>
-            item.productId === productId
-              ? {
-                  ...item,
-                  quantity: item.quantity + 1,
-                }
-              : item
-          )
-        : [
-            ...current,
-            {
-              productId,
-              quantity: 1,
-            },
-          ];
+      if (existingItem) {
+        return current.map((item) =>
+          item.productId === productId
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+              }
+            : item
+        );
+      }
 
-      // Save immediately so the item is available on the Cart page
-      // even when the user moves to another page right after clicking.
-      localStorage.setItem(
-        "loome-cart",
-        JSON.stringify(updatedCart)
-      );
-
-      return updatedCart;
+      return [
+        ...current,
+        {
+          productId,
+          quantity: 1,
+        },
+      ];
     });
   };
 
@@ -1654,7 +1647,7 @@ export default function ShopPage() {
                             e.stopPropagation();
                             addToBag(product.id);
                           }}
-                          className="absolute bottom-4 left-4 right-4 z-50 flex translate-y-0 cursor-pointer select-none items-center justify-center gap-2 bg-[#27231f] py-3.5 text-[9px] uppercase tracking-[0.18em] text-white opacity-100 transition-all duration-300 sm:translate-y-3 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 hover:bg-[#403a34] touch-manipulation"
+                          className="absolute bottom-4 left-4 right-4 z-30 flex translate-y-3 items-center justify-center gap-2 bg-[#27231f] py-3.5 text-[9px] uppercase tracking-[0.18em] text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hover:bg-[#403a34]"
                         >
 
                           <ShoppingBag
@@ -2086,5 +2079,17 @@ export default function ShopPage() {
       </footer>
 
     </main>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#f7f3ec]" />
+      }
+    >
+      <ShopContent />
+    </Suspense>
   );
 }
