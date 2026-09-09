@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   ArrowRight,
@@ -159,7 +159,7 @@ const products: Product[] = [
 
 const categories = ["All", "Women", "Men", "Kids"];
 
-function ShopContent() {
+export default function ShopPage() {
   const searchParams = useSearchParams();
 
   // =====================================================
@@ -532,6 +532,20 @@ function ShopContent() {
 
               {cartCount > 0 && (
                 <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#f7f3ec] px-1.5 text-[8px] text-[#27231f]">
+                  {cartCount}
+                </span>
+              )}
+            </a>
+
+            {/* MOBILE BAG ICON */}
+            <a
+              href="/cart"
+              aria-label={`View bag${cartCount > 0 ? `, ${cartCount} item${cartCount === 1 ? "" : "s"}` : ""}`}
+              className="relative flex h-10 w-10 items-center justify-center border border-[#27231f]/15 transition-all duration-300 hover:bg-[#e9e1d5] lg:hidden"
+            >
+              <ShoppingBag size={18} strokeWidth={1.4} />
+              {cartCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#27231f] px-1 text-[8px] text-white">
                   {cartCount}
                 </span>
               )}
@@ -1647,7 +1661,7 @@ function ShopContent() {
                             e.stopPropagation();
                             addToBag(product.id);
                           }}
-                          className="absolute bottom-4 left-4 right-4 z-30 flex translate-y-3 items-center justify-center gap-2 bg-[#27231f] py-3.5 text-[9px] uppercase tracking-[0.18em] text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hover:bg-[#403a34]"
+                          className="absolute bottom-4 left-4 right-4 z-30 flex translate-y-0 items-center justify-center gap-2 bg-[#27231f] py-3.5 text-[9px] uppercase tracking-[0.18em] text-white opacity-100 transition-all duration-300 sm:translate-y-3 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 hover:bg-[#403a34]"
                         >
 
                           <ShoppingBag
@@ -2079,17 +2093,5 @@ function ShopContent() {
       </footer>
 
     </main>
-  );
-}
-
-export default function ShopPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#f7f3ec]" />
-      }
-    >
-      <ShopContent />
-    </Suspense>
   );
 }
